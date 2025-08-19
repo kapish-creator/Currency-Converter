@@ -20,25 +20,59 @@ def convert_currency(amount, from_currency, to_currency):
 # ----------------- Streamlit UI -----------------
 st.set_page_config(page_title="🌍 Currency Converter", page_icon="💱", layout="centered")
 
-# Custom CSS for responsiveness
+# Force Dark Mode CSS
 st.markdown(
     """
     <style>
-    .block-container {
-        max-width: 700px;
-        margin: auto;
-        padding-top: 2rem;
+    /* Background */
+    body, .block-container {
+        background-color: #121212 !important;
+        color: #FFFFFF !important;
     }
+
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #4DB6AC !important;
+    }
+
+    /* Labels, text, paragraph */
+    label, p, span, .stMarkdown, .stRadio, .stSelectbox label, .stNumberInput label {
+        color: #DDDDDD !important;
+    }
+
+    /* Input fields */
+    .stTextInput input, .stNumberInput input, .stSelectbox div[data-baseweb="select"] {
+        background-color: #1E1E1E !important;
+        color: #FFFFFF !important;
+        border: 1px solid #4DB6AC !important;
+    }
+
+    /* Success box */
+    .stSuccess {
+        background-color: #1E3D3A !important;
+        color: #00E676 !important;
+        border: 1px solid #00E676 !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* Error box */
+    .stError {
+        background-color: #3D1E1E !important;
+        color: #FF6B6B !important;
+        border: 1px solid #FF6B6B !important;
+    }
+
+    /* Footer text */
+    .footer {
+        text-align: center;
+        color: gray;
+        margin-top: 2rem;
+    }
+
+    /* Responsive typography */
     h1 {
         font-size: 2rem !important;
         text-align: center;
-        color: #2E86C1;
-    }
-    p, label {
-        font-size: 1rem !important;
-    }
-    .stSuccess {
-        font-size: 1.1rem !important;
     }
     @media (max-width: 600px) {
         h1 { font-size: 1.5rem !important; }
@@ -49,6 +83,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# ----------------- App Content -----------------
 st.markdown("<h1>💱 Currency Converter</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align:center;color:gray;'>Real-time currency conversion powered by Frankfurter API</p>", unsafe_allow_html=True)
 
@@ -86,7 +121,7 @@ if amount:
     try:
         # Step 1: Convert input -> MYR
         amount_in_myr = convert_currency(amount, input_currency, base_currency)
-        
+
         # Step 2: Convert MYR -> Target
         final_amount = convert_currency(amount_in_myr, base_currency, target_currency)
 
@@ -102,7 +137,7 @@ if amount:
 st.markdown(
     """
     <hr>
-    <p style='text-align: center; color: gray;'>
+    <p class="footer">
     Data sourced from <a href='https://www.frankfurter.app/' target='_blank'>Frankfurter API</a> |
     Built with ❤️ using Streamlit
     </p>
