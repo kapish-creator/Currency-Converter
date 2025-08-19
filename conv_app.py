@@ -18,96 +18,32 @@ def convert_currency(amount, from_currency, to_currency):
     return data["rates"][to_currency]
 
 # ----------------- Streamlit UI -----------------
-st.set_page_config(page_title="🌍 Currency Converter", page_icon="💱", layout="centered")
+st.set_page_config(page_title="Currency Converter", page_icon="💱", layout="centered")
 
-# Force Dark Mode CSS
-st.markdown(
-    """
-    <style>
-    /* Background */
-    body, .block-container {
-        background-color: #121212 !important;
-        color: #FFFFFF !important;
-    }
-
-    /* Headers */
-    h1, h2, h3, h4, h5, h6 {
-        color: #4DB6AC !important;
-    }
-
-    /* Labels, text, paragraph */
-    label, p, span, .stMarkdown, .stRadio, .stSelectbox label, .stNumberInput label {
-        color: #DDDDDD !important;
-    }
-
-    /* Input fields */
-    .stTextInput input, .stNumberInput input, .stSelectbox div[data-baseweb="select"] {
-        background-color: #1E1E1E !important;
-        color: #FFFFFF !important;
-        border: 1px solid #4DB6AC !important;
-    }
-
-    /* Success box */
-    .stSuccess {
-        background-color: #1E3D3A !important;
-        color: #00E676 !important;
-        border: 1px solid #00E676 !important;
-        font-size: 1.1rem !important;
-    }
-
-    /* Error box */
-    .stError {
-        background-color: #3D1E1E !important;
-        color: #FF6B6B !important;
-        border: 1px solid #FF6B6B !important;
-    }
-
-    /* Footer text */
-    .footer {
-        text-align: center;
-        color: gray;
-        margin-top: 2rem;
-    }
-
-    /* Responsive typography */
-    h1 {
-        font-size: 2rem !important;
-        text-align: center;
-    }
-    @media (max-width: 600px) {
-        h1 { font-size: 1.5rem !important; }
-        .stSuccess { font-size: 1rem !important; }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# ----------------- App Content -----------------
-st.markdown("<h1>💱 Currency Converter</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center;color:gray;'>Real-time currency conversion powered by Frankfurter API</p>", unsafe_allow_html=True)
+st.title("💱 Global Currency Converter")
+st.caption("Real-time currency conversion powered by Frankfurter API")
 
 # Load available currencies
 currencies = get_currencies()
 currency_codes = list(currencies.keys())
 
-# Always fixed base = MYR
-base_currency = "MYR"
+# Default base currency = MYR
+default_base_currency = "MYR"
 
-# Layout: Input currency + Target currency in columns
+# Columns for input and target currency
 col1, col2 = st.columns(2)
 
 with col1:
     input_currency = st.selectbox(
         "Currency you want to enter:",
         options=currency_codes,
-        index=currency_codes.index("MYR") if "MYR" in currency_codes else 0,
+        index=currency_codes.index(default_base_currency) if default_base_currency in currency_codes else 0,
         format_func=lambda x: f"{x} - {currencies[x]}"
     )
 
 with col2:
     target_currency = st.selectbox(
-        "Convert MYR to:",
+        f"Convert {input_currency} to:",  # dynamic label
         options=currency_codes,
         index=currency_codes.index("INR") if "INR" in currency_codes else 0,
         format_func=lambda x: f"{x} - {currencies[x]}"
@@ -120,27 +56,22 @@ amount = st.number_input(f"Enter amount in {input_currency}:", min_value=0.0, st
 if amount:
     try:
         # Step 1: Convert input -> MYR
-        amount_in_myr = convert_currency(amount, input_currency, base_currency)
-
+        amount_in_myr = convert_currency(amount, input_currency, default_base_currency)
         # Step 2: Convert MYR -> Target
-        final_amount = convert_currency(amount_in_myr, base_currency, target_currency)
+        final_amount = convert_currency(amount_in_myr, default_base_currency, target_currency)
 
+        # Display success message
         st.success(
-            f"💰 {amount:.2f} {input_currency} = {amount_in_myr:,.2f} {base_currency} "
+            f"💰 {amount:.2f} {input_currency} = {amount_in_myr:,.2f} {default_base_currency} "
             f"= {final_amount:,.2f} {target_currency}"
         )
 
-    except Exception as e:
+    except Exception:
         st.error("⚠️ Unable to fetch live rates. Please try again later.")
 
 # Footer
+st.markdown("---")
 st.markdown(
-    """
-    <hr>
-    <p class="footer">
-    Data sourced from <a href='https://www.frankfurter.app/' target='_blank'>Frankfurter API</a> |
-    Built with ❤️ using Streamlit
-    </p>
-    """,
-    unsafe_allow_html=True
+    "Data sourced from [Frankfurter API](https://www.frankfurter.app/) | Built with ❤️ using Streamlit",
+    unsafe_allow_html=True,
 )
